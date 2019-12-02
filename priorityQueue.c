@@ -1,119 +1,106 @@
 #include <stdio.h>
 
-const int MAX_PRIORITY = 999;
+void enqueue(int i,int y);
+void dequeue();
+void display();
 
-typedef struct
-{
+struct node{
+	int data;
+	struct node* next;
+	int priority;
+};
 
-  int num;
-  struct Qnode *next;
-  int prty;
+struct node* front = NULL;
+struct node* rear = NULL;
 
-} Qnode, *QnodePtr;
+int main(){
+	//int i;
+	//scanf("%d",&i);
 
-typedef struct Queue
-{
-
-    QnodePtr top;
-    QnodePtr tail;
-
-} Queuetype, *Queue;
-
-Queue initQueue();
-int isEmpty(Queue q);
-void enqueue(Queue q, int num);
-void pEnqueue(Queue q, int num, int prty);
-int dequeue(Queue q);
-
-int main()
-{
-    Queue q = initQueue();
-    enqueue(q, 54);
-    enqueue(q, 32);
-    enqueue(q, 12);
-    enqueue(q, 27);
-    enqueue(q, 34);
-    pEnqueue(q,2, 1);
-    pEnqueue(q,8, 5);
-    while(!isEmpty(q))
-    {
-
-        printf("%d\n", dequeue(q));
-
-    }
-    return 0;
+	int s,j=2,r;
+	do{ 
+		printf("\n#####################################################################\n");
+		printf("\nEnter one to enqueue \n");
+		printf("\nEnter two to dequeu \n");
+		printf("\nEnter three display items in the queue \n");
+		printf("\n#####################################################################\n");
+		scanf("%d",&s);int data=0, priority=0;
+		switch(s)
+	    {
+		    case 1:
+		    	
+		    	printf("Enter the data: \n");
+		    	scanf("%d",&data);
+		    	printf("Enter the priority: \n");
+		    	scanf("%d",&priority);
+		    	enqueue(data,priority);
+		    	break;
+		    case 2:
+		    	dequeue();
+		    	break;
+		    case 3:
+		    	Display();
+		    	break;
+		    default:
+		    	printf("no operation for this number choose(1,2,3)");
+		    	break;
+	    }j = 1;
+	printf("\nif you want to continue press num>0 else press 0:");
+	scanf("%d",&r);
+}while(j<=r);
+	return 0;
 }
 
-Queue initQueue()
-{
-    Queue newQueue = malloc(sizeof(Queuetype));
-    newQueue->top = NULL;
-    newQueue->tail = NULL;
-    return newQueue;
 
+void enqueue(int data1, int priority1){
+	struct node* temp = (struct node*)malloc(sizeof(struct node));
+	temp->data = data1;
+	temp->priority = priority1;
+	temp->next = NULL;
+	if(front==NULL && rear==NULL){
+		front = rear = temp;
+	}else{
+		struct node* temp1 = front;
+		if(temp1->priority > temp->priority){
+            front = temp;
+            temp->next = temp1;
+            return;
+        }
+        
+		while(temp1->next != NULL && temp1->next->priority < temp->priority){
+			temp1 = temp1->next;
+		}
+		if(temp1->next != NULL) {
+			temp->next = temp1->next;
+		}
+		temp1->next = temp;
+	}
 }
-
-int isEmpty(Queue q)
-{return q->top == NULL;}
-
-void enqueue(Queue q, int num)
-{
-    QnodePtr newNode = malloc(sizeof(Qnode));
-    newNode->num = num;
-    newNode->next = NULL;
-    newNode->prty = MAX_PRIORITY;
-
-    if(isEmpty(q)) {q->top = newNode; q->tail = newNode;}
+void dequeue(){
+	struct node* temp = front;
+	if(front == NULL){
+		return;
+	}
+	if(front == rear){
+		front = rear = NULL;
+	}else{
+		front = front->next;
+	}
+	int poped = temp->data;
+	free(temp);
+	printf("\n %d poped.\n",poped);
+}
+void Display(){
+	struct node* temp;
+    if( front == NULL) printf("Empty Queue\n");
     else
     {
-            q->tail->next = newNode;
-            q->tail = newNode;
-
+        temp=front;
+        printf("elements in queue\n");
+        while(temp)
+        {
+            printf("%d  %d\n",temp->data, temp->priority);
+            temp=temp->next;
+        }
     }
-
-}
-
-void pEnqueue(Queue q, int num, int prty)
-{
-
-    QnodePtr newNode = malloc(sizeof(Qnode));
-    newNode->num = num;
-    newNode->next = NULL;
-    newNode->prty = prty;
-
-    if(isEmpty(q)) {q->top = newNode; q->tail = newNode;}
-    else
-    {
-            q->tail->next = newNode;
-            q->tail = newNode;
-
-            QnodePtr temp = q->top;
-            if(temp->prty > newNode->prty)
-            {
-                q->top = newNode;
-                newNode->next = temp;
-                return;
-
-            }
-
-            while(temp->next != NULL && temp->next->prty < newNode->prty)
-                {temp = temp->next;}
-
-            if(temp->next != NULL) {newNode->next = temp->next;}
-            temp->next = newNode;
-
-    }
-
-}
-
-int dequeue(Queue q)
-{
-
-    if(isEmpty(q)) {printf("Queue is already empty, no nodes to remove"); return;}
-    QnodePtr temp = q->top;
-    int tempNum = q->top->num;
-    q->top = q->top->next;
-    free(temp);
-    return tempNum;
-
 }
